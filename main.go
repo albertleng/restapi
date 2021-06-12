@@ -41,7 +41,7 @@ type Character struct {
 }
 
 
-func getCharacters(w http.ResponseWriter, r *http.Request) {
+func getCharacters(w http.ResponseWriter, _ *http.Request) {
 	ts := strconv.FormatInt(time.Now().Unix(), 10)
 	hash := getMd5(ts + conf.privateKey + conf.publicKey)
 
