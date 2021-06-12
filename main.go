@@ -5,7 +5,6 @@ package main
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"io/ioutil"
@@ -59,32 +58,43 @@ func getCharacters(w http.ResponseWriter, r *http.Request) {
 
 	responseString := string(responseData)
 	fmt.Fprint(w, responseString)
-	fmt.Println(responseString)
 }
 
 // Serve an endpoint /characters/{characterId} that returns only the id, name and description
 // of the character.
 func getCharacter(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r) // Gets params
-	// Loop through books and find one with the id from the params
-	for _, item := range books {
-		if item.ID == params["id"] {
-			json.NewEncoder(w).Encode(item)
-			return
-		}
-	}
-	err := json.NewEncoder(w).Encode(&Book{})
+
+	ts := strconv.FormatInt(time.Now().Unix(), 10)
+	hash := getMd5(ts + conf.privateKey + conf.publicKey)
+
+	response, err := http.Get(baseURL + "/characters/" + params["characterId"] + "?ts=" + ts + "&apikey=" + conf.publicKey + "&hash=" + hash)
+
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
+	defer response.Body.Close()
+
+	fmt.Println("ts: " + ts)
+	fmt.Println("apikey: " + conf.publicKey)
+	fmt.Println("hash: " + hash)
+	fmt.Println("characterId: " + params["characterId"])
+
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	responseString := string(responseData)
+	fmt.Fprint(w, responseString)
+
 }
 
 func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/characters", getCharacters).Methods("GET")
-	router.HandleFunc("/characters/{id}", getCharacter).Methods("GET")
+	router.HandleFunc("/characters/{characterId}", getCharacter).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
