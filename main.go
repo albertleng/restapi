@@ -17,31 +17,14 @@ import (
 
 const (
 	baseURL = "https://gateway.marvel.com/v1/public"
-	limit   = 100
+	limit   = "100"
 )
-
-// Book struct (Model)
-type Book struct {
-	ID     string  `json:"id"`
-	Isbn   string  `json:"isbn"`
-	Title  string  `json:"title"`
-	Author *Author `json:"author"`
-}
-
-// Author struct
-type Author struct {
-	Firstname string `json:"firstname"`
-	Lastname  string `json:"lastname"`
-}
-
-// Init books var as a slice Book struct
-var books []Book
 
 func getCharacters(w http.ResponseWriter, r *http.Request) {
 	ts := strconv.FormatInt(time.Now().Unix(), 10)
 	hash := getMd5(ts + conf.privateKey + conf.publicKey)
 
-	response, err := http.Get(baseURL + "/characters?ts=" + ts + "&apikey=" + conf.publicKey + "&hash=" + hash)
+	response, err := http.Get(baseURL + "/characters?ts=" + ts + "&apikey=" + conf.publicKey + "&hash=" + hash + "&limit=" + limit)
 	if err != nil {
 		log.Fatal(err)
 	}
