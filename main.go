@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -16,13 +17,7 @@ const (
 	limit = 100
 )
 
-type Article struct {
-	Title   string `json: Title`
-	Desc    string `json:desc`
-	Content string `json:content`
-}
 
-type Articles []Article
 
 // Book struct (Model)
 type Book struct {
@@ -42,14 +37,19 @@ type Author struct {
 var books []Book
 
 func getCharacters(w http.ResponseWriter, r *http.Request) {
-	articles := Articles{
-		Article{Title: "Test Title", Desc: "Test Description", Content: "Hello World"},
-	}
-	fmt.Println("Endpoint Hit: All Articles Endpoint")
-	err := json.NewEncoder(w).Encode(articles)
+	response, err := http.Get("https://api.coinbase.com/v2/prices/spot?currency=USD")
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
+	defer response.Body.Close()
+
+	responseData, err := ioutil.ReadAll(response.Body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	responseString := string(responseData)
+	fmt.Fprint(w, responseString)
 }
 
 func getCharacter(w http.ResponseWriter, r *http.Request) {
