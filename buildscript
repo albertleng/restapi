@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# swagger generate server -A whc-api -P models.User ./swagger.yaml
+# cp swagger.yaml cmd/whc-api-server/
+echo "Go build"
+cd "$GOPATH"/src/github.com/albertleng/restapi || exit
+go build -o restapi
+echo "Go build done"
+# ./restapi --host= --tls-port=2000 --param-file=SiteConfig.ini --tls-certificate host.cert --tls-key host.key --scheme https
+restapi
