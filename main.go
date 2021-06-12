@@ -21,6 +21,14 @@ const (
 	limit   = "100"
 )
 
+type CharacterId struct {
+	Data struct {
+		Results []struct {
+			Id int `json:"id"`
+		} `json:"results"`
+	} `json:"data"`
+}
+
 // Character struct which contains a result
 type Character struct {
 	Data struct {
@@ -31,6 +39,7 @@ type Character struct {
 		} `json:"results"`
 	} `json:"data"`
 }
+
 
 func getCharacters(w http.ResponseWriter, r *http.Request) {
 	ts := strconv.FormatInt(time.Now().Unix(), 10)
@@ -54,14 +63,14 @@ func getCharacters(w http.ResponseWriter, r *http.Request) {
 	//responseString := string(responseBytes)
 	//fmt.Fprint(w, responseString)
 
-	var character Character
-	err = json.Unmarshal(responseBytes, &character)
+	var characterId CharacterId
+	err = json.Unmarshal(responseBytes, &characterId)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
 
-	data, err := json.MarshalIndent(character.Data.Results, "", " ")
+	data, err := json.MarshalIndent(characterId.Data.Results, "", " ")
 	fmt.Fprint(w, string(data))
 }
 
@@ -100,7 +109,7 @@ func getCharacter(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data, err := json.MarshalIndent(character.Data.Results, "", " ")
+	data, err := json.MarshalIndent(character.Data.Results[0], "", " ")
 	fmt.Fprint(w, string(data))
 
 }
