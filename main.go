@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -70,8 +71,9 @@ func getCharacters(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 
-	data, err := json.MarshalIndent(characterId.Data.Results, "", " ")
-	fmt.Fprint(w, string(data))
+	data, err := json.Marshal(characterId.Data.Results)
+	replacer := strings.NewReplacer("\"id\":", "", "{", "", "}", "", ",", ", ", "[", "[ ")
+	fmt.Fprint(w, replacer.Replace(string(data)))
 }
 
 // Serve an endpoint /characters/{characterId} that returns only the id, name and description
