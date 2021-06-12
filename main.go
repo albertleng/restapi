@@ -3,6 +3,8 @@ package main
 // Ref: https://github.com/loivis/marvel-comics-api-data-loader
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
@@ -10,14 +12,14 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
+	"time"
 )
 
 const (
 	baseURL = "https://gateway.marvel.com/v1/public"
-	limit = 100
+	limit   = 100
 )
-
-
 
 // Book struct (Model)
 type Book struct {
@@ -37,11 +39,18 @@ type Author struct {
 var books []Book
 
 func getCharacters(w http.ResponseWriter, r *http.Request) {
-	response, err := http.Get("https://api.coinbase.com/v2/prices/spot?currency=USD")
+	ts := strconv.FormatInt(time.Now().Unix(), 10)
+	hash := getMd5(ts + conf.privateKey + conf.publicKey)
+
+	response, err := http.Get(baseURL + "/characters?ts=" + ts + "&apikey=" + conf.publicKey + "&hash=" + hash)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer response.Body.Close()
+
+	fmt.Println("ts: " + ts)
+	fmt.Println("apikey: " + conf.publicKey)
+	fmt.Println("hash: " + hash)
 
 	responseData, err := ioutil.ReadAll(response.Body)
 	if err != nil {
@@ -50,8 +59,11 @@ func getCharacters(w http.ResponseWriter, r *http.Request) {
 
 	responseString := string(responseData)
 	fmt.Fprint(w, responseString)
+	fmt.Println(responseString)
 }
 
+// Serve an endpoint /characters/{characterId} that returns only the id, name and description
+// of the character.
 func getCharacter(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r) // Gets params
@@ -64,7 +76,7 @@ func getCharacter(w http.ResponseWriter, r *http.Request) {
 	}
 	err := json.NewEncoder(w).Encode(&Book{})
 	if err != nil {
-		return 
+		return
 	}
 }
 
@@ -78,21 +90,25 @@ func handleRequests() {
 
 type config struct {
 	privateKey string
-	publicKey string
+	publicKey  string
 }
 
 // TODO: Change to read from config file
 func readConfig() *config {
 	return &config{
 		privateKey: os.Getenv("MARVEL_API_PRIVATE_KEY"),
-		publicKey: os.Getenv("MARVEL_API_PUBLIC_KEY"),
+		publicKey:  os.Getenv("MARVEL_API_PUBLIC_KEY"),
 	}
 }
 
+var conf *config
+
+func getMd5(str string) string {
+	h := md5.New()
+	h.Write([]byte(str))
+	return hex.EncodeToString(h.Sum(nil))
+}
 func main() {
-	// Init Router
-	//router := mux.NewRouter()
-	conf := readConfig()
-	fmt.Fprintln(os.Stderr, conf)
+	conf = readConfig()
 	handleRequests()
 }
