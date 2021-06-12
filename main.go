@@ -5,6 +5,7 @@ package main
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"io/ioutil"
@@ -20,6 +21,17 @@ const (
 	limit   = "100"
 )
 
+// Character struct which contains a result
+type Character struct {
+	Data struct {
+		Results []struct {
+			Id int `json:"id"`
+			Name string `json:"name"`
+			Desc string `json:"description"`
+		} `json:"results"`
+	} `json:"data"`
+}
+
 func getCharacters(w http.ResponseWriter, r *http.Request) {
 	ts := strconv.FormatInt(time.Now().Unix(), 10)
 	hash := getMd5(ts + conf.privateKey + conf.publicKey)
@@ -34,13 +46,23 @@ func getCharacters(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("apikey: " + conf.publicKey)
 	fmt.Println("hash: " + hash)
 
-	responseData, err := ioutil.ReadAll(response.Body)
+	responseBytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
+	//
+	//responseString := string(responseBytes)
+	//fmt.Fprint(w, responseString)
 
-	responseString := string(responseData)
-	fmt.Fprint(w, responseString)
+	var character Character
+	err = json.Unmarshal(responseBytes, &character)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	data, err := json.MarshalIndent(character.Data.Results, "", " ")
+	fmt.Fprint(w, string(data))
 }
 
 // Serve an endpoint /characters/{characterId} that returns only the id, name and description
@@ -63,13 +85,23 @@ func getCharacter(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("hash: " + hash)
 	fmt.Println("characterId: " + params["characterId"])
 
-	responseData, err := ioutil.ReadAll(response.Body)
+	responseBytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	responseString := string(responseData)
-	fmt.Fprint(w, responseString)
+	//responseString := string(responseBytes)
+	//fmt.Fprint(w, responseString)
+
+	var character Character
+	err = json.Unmarshal(responseBytes, &character)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	data, err := json.MarshalIndent(character.Data.Results, "", " ")
+	fmt.Fprint(w, string(data))
 
 }
 
