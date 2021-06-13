@@ -4,6 +4,7 @@ package main
 
 //TODO: Implement unit testing
 //TODO: Write a swagger.yaml
+//TODO: Add readme.md
 
 import (
 	"crypto/md5"
