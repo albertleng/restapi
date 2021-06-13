@@ -13,7 +13,6 @@ import (
 	"net/http"
 	"os"
 	"strconv"
-	"strings"
 	"time"
 )
 
@@ -30,18 +29,18 @@ type CharacterId struct {
 	} `json:"data"`
 }
 
-// Character struct which contains a result
 type Character struct {
 	Data struct {
 		Results []struct {
-			Id int `json:"id"`
+			Id   int    `json:"id"`
 			Name string `json:"name"`
 			Desc string `json:"description"`
 		} `json:"results"`
 	} `json:"data"`
 }
 
-
+// Serve an endpoint /characters that returns all the Marvel character ids in a JSON array of
+// numbers.
 func getCharacters(w http.ResponseWriter, _ *http.Request) {
 	ts := strconv.FormatInt(time.Now().Unix(), 10)
 	hash := getMd5(ts + conf.privateKey + conf.publicKey)
@@ -60,9 +59,6 @@ func getCharacters(w http.ResponseWriter, _ *http.Request) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	//
-	//responseString := string(responseBytes)
-	//fmt.Fprint(w, responseString)
 
 	var characterId CharacterId
 	err = json.Unmarshal(responseBytes, &characterId)
@@ -71,9 +67,16 @@ func getCharacters(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 
-	data, err := json.Marshal(characterId.Data.Results)
-	replacer := strings.NewReplacer("\"id\":", "", "{", "", "}", "", ",", ", ", "[", "[ ")
-	fmt.Fprint(w, replacer.Replace(string(data)))
+	var data []int
+	for _, result := range characterId.Data.Results {
+		data = append(data, result.Id)
+	}
+	output, err := json.Marshal(data)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	fmt.Fprint(w, string(output))
 }
 
 // Serve an endpoint /characters/{characterId} that returns only the id, name and description
@@ -91,18 +94,10 @@ func getCharacter(w http.ResponseWriter, r *http.Request) {
 	}
 	defer response.Body.Close()
 
-	fmt.Println("ts: " + ts)
-	fmt.Println("apikey: " + conf.publicKey)
-	fmt.Println("hash: " + hash)
-	fmt.Println("characterId: " + params["characterId"])
-
 	responseBytes, err := ioutil.ReadAll(response.Body)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	//responseString := string(responseBytes)
-	//fmt.Fprint(w, responseString)
 
 	var character Character
 	err = json.Unmarshal(responseBytes, &character)
@@ -113,7 +108,6 @@ func getCharacter(w http.ResponseWriter, r *http.Request) {
 
 	data, err := json.MarshalIndent(character.Data.Results[0], "", " ")
 	fmt.Fprint(w, string(data))
-
 }
 
 func handleRequests() {
