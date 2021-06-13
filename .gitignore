@@ -6,7 +6,7 @@
 *.so
 *.dylib
 restapi
-
+ids.txt
 # Test binary, built with `go test -c`
 *.test
 

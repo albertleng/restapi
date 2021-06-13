@@ -11,6 +11,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"github.com/albertleng/restapi/file"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
@@ -48,6 +49,19 @@ type Character struct {
 // Serve an endpoint /characters that returns all the Marvel character ids in a JSON array of
 // numbers.
 func getCharacters(w http.ResponseWriter, _ *http.Request) {
+
+	if ids, err := file.ReadFile(); ids != nil && err == nil {
+		output, err := json.Marshal(ids)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		fmt.Fprint(w, string(output))
+
+		return
+	}
+
 	var data []int
 	offset := 0
 	for {
@@ -90,11 +104,14 @@ func getCharacters(w http.ResponseWriter, _ *http.Request) {
 
 		offset += 100
 	}
+	file.CreateFile()
+	file.WriteFile(data)
 	output, err := json.Marshal(data)
 	if err != nil {
 		log.Fatal(err)
 		return
 	}
+
 	fmt.Fprint(w, string(output))
 }
 
@@ -157,6 +174,7 @@ func getMd5(str string) string {
 	h.Write([]byte(str))
 	return hex.EncodeToString(h.Sum(nil))
 }
+
 func main() {
 	conf = readConfig()
 	handleRequests()
