@@ -49,7 +49,6 @@ type Character struct {
 // Serve an endpoint /characters that returns all the Marvel character ids in a JSON array of
 // numbers.
 func getCharacters(w http.ResponseWriter, _ *http.Request) {
-
 	if ids, err := file.ReadFile(); ids != nil && err == nil {
 		output, err := json.Marshal(ids)
 		if err != nil {
@@ -58,7 +57,6 @@ func getCharacters(w http.ResponseWriter, _ *http.Request) {
 		}
 
 		fmt.Fprint(w, string(output))
-
 		return
 	}
 
@@ -73,12 +71,6 @@ func getCharacters(w http.ResponseWriter, _ *http.Request) {
 			log.Fatal(err)
 		}
 		defer response.Body.Close()
-
-		fmt.Println("ts: " + ts)
-		fmt.Println("apikey: " + conf.publicKey)
-		fmt.Println("hash: " + hash)
-		fmt.Println("offset: " + strconv.Itoa(offset))
-
 		responseBytes, err := ioutil.ReadAll(response.Body)
 		if err != nil {
 			log.Fatal(err)
@@ -95,15 +87,13 @@ func getCharacters(w http.ResponseWriter, _ *http.Request) {
 			data = append(data, result.Id)
 		}
 
-		fmt.Println("characterId.Data.Results == nil: " + strconv.FormatBool(characterId.Data.Results == nil))
-		fmt.Println("characterId.Data.Results < 100: " + strconv.FormatBool(len(characterId.Data.Results) < 100))
-		fmt.Println("len(characterId.Data.Results): " + strconv.FormatInt(int64(len(characterId.Data.Results)), 10))
 		if characterId.Data.Results == nil || len(characterId.Data.Results) < 100 {
 			break
 		}
 
 		offset += 100
 	}
+
 	file.CreateFile()
 	file.WriteFile(data)
 	output, err := json.Marshal(data)
