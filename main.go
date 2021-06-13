@@ -2,6 +2,9 @@ package main
 
 // Ref: https://github.com/loivis/marvel-comics-api-data-loader
 
+//TODO: Implement unit testing
+//TODO: Write a swagger.yaml
+
 import (
 	"crypto/md5"
 	"encoding/hex"
@@ -39,6 +42,9 @@ type Character struct {
 	} `json:"data"`
 }
 
+
+// TODO: 1. Get ALL characters by multiple calls using different offsets
+// TODO: 2. Implement caching
 // Serve an endpoint /characters that returns all the Marvel character ids in a JSON array of
 // numbers.
 func getCharacters(w http.ResponseWriter, _ *http.Request) {
