@@ -43,40 +43,52 @@ type Character struct {
 	} `json:"data"`
 }
 
-
 // TODO: 1. Get ALL characters by multiple calls using different offsets
 // TODO: 2. Implement caching
 // Serve an endpoint /characters that returns all the Marvel character ids in a JSON array of
 // numbers.
 func getCharacters(w http.ResponseWriter, _ *http.Request) {
-	ts := strconv.FormatInt(time.Now().Unix(), 10)
-	hash := getMd5(ts + conf.privateKey + conf.publicKey)
-
-	response, err := http.Get(baseURL + "/characters?ts=" + ts + "&apikey=" + conf.publicKey + "&hash=" + hash + "&limit=" + limit)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer response.Body.Close()
-
-	fmt.Println("ts: " + ts)
-	fmt.Println("apikey: " + conf.publicKey)
-	fmt.Println("hash: " + hash)
-
-	responseBytes, err := ioutil.ReadAll(response.Body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	var characterId CharacterId
-	err = json.Unmarshal(responseBytes, &characterId)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-
 	var data []int
-	for _, result := range characterId.Data.Results {
-		data = append(data, result.Id)
+	offset := 0
+	for {
+		ts := strconv.FormatInt(time.Now().Unix(), 10)
+		hash := getMd5(ts + conf.privateKey + conf.publicKey)
+
+		response, err := http.Get(baseURL + "/characters?ts=" + ts + "&apikey=" + conf.publicKey + "&hash=" + hash + "&limit=" + limit + "&offset=" + strconv.Itoa(offset))
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer response.Body.Close()
+
+		fmt.Println("ts: " + ts)
+		fmt.Println("apikey: " + conf.publicKey)
+		fmt.Println("hash: " + hash)
+		fmt.Println("offset: " + strconv.Itoa(offset))
+
+		responseBytes, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		var characterId CharacterId
+		err = json.Unmarshal(responseBytes, &characterId)
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		for _, result := range characterId.Data.Results {
+			data = append(data, result.Id)
+		}
+
+		fmt.Println("characterId.Data.Results == nil: " + strconv.FormatBool(characterId.Data.Results == nil))
+		fmt.Println("characterId.Data.Results < 100: " + strconv.FormatBool(len(characterId.Data.Results) < 100))
+		fmt.Println("len(characterId.Data.Results): " + strconv.FormatInt(int64(len(characterId.Data.Results)), 10))
+		if characterId.Data.Results == nil || len(characterId.Data.Results) < 100 {
+			break
+		}
+
+		offset += 100
 	}
 	output, err := json.Marshal(data)
 	if err != nil {
