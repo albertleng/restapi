@@ -25,7 +25,7 @@ func CreateFile() {
 	fmt.Println("Done creating file ", path)
 }
 
-func WriteFile(charIds []int) {
+func WriteFile(ids []int) {
 	var file, err = os.OpenFile(path, os.O_RDWR, 0644)
 	if err != nil {
 		log.Fatal(err)
@@ -33,7 +33,7 @@ func WriteFile(charIds []int) {
 	}
 	defer file.Close()
 	
-	_, err = file.WriteString(getString(charIds))
+	_, err = file.WriteString(getString(ids))
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -46,6 +46,18 @@ func WriteFile(charIds []int) {
 	}
 	
 	fmt.Println("Done writing to file")
+}
+
+func AppendFile(ids []int) {
+    var file, err = os.OpenFile(path, os.O_APPEND | os.O_WRONLY, 0644)
+    if err != nil {
+    	log.Fatal(err)
+		return
+    }
+	defer file.Close()
+    if _, err := file.WriteString(getString(ids)); err != nil {
+    	log.Fatal(err)
+	}
 }
 
 func ReadFile() (charIds []int, e error) {
