@@ -18,10 +18,19 @@ import (
 	"time"
 )
 
+var isStarted bool
+
 const (
 	baseURL = "https://gateway.marvel.com/v1/public"
 	limit   = "100"
 )
+
+type config struct {
+	privateKey string
+	publicKey  string
+}
+
+var conf *config
 
 type CharacterId struct {
 	Data struct {
@@ -31,12 +40,10 @@ type CharacterId struct {
 	} `json:"data"`
 }
 
-
-
 type Character struct {
-	Code int `json:"code"`
+	Code   int    `json:"code"`
 	Status string `json:"status"`
-	Data struct {
+	Data   struct {
 		Results []struct {
 			Id   int    `json:"id"`
 			Name string `json:"name"`
@@ -46,7 +53,7 @@ type Character struct {
 }
 
 type CodeStatus struct {
-	Code int `json:"code"`
+	Code   int    `json:"code"`
 	Status string `json:"status"`
 }
 
@@ -54,6 +61,18 @@ type CodeStatus struct {
 // numbers.
 func getCharacters(w http.ResponseWriter, _ *http.Request) {
 	if ids, err := file.ReadFile(); ids != nil && err == nil {
+		if isStarted == false {
+			isStarted = true
+			idsLen := len(ids)
+			newIds := getUpdatedCharacterIds(idsLen)
+			if len(newIds) > 0 {
+				for _, newId := range newIds {
+					ids = append(ids, newId)
+				}
+				file.AppendFile(newIds)
+			}
+		}
+
 		output, err := json.Marshal(ids)
 		if err != nil {
 			log.Fatal(err)
@@ -66,8 +85,22 @@ func getCharacters(w http.ResponseWriter, _ *http.Request) {
 		return
 	}
 
-	var data []int
-	offset := 0
+	data := getUpdatedCharacterIds(0)
+
+	file.CreateFile()
+	file.WriteFile(data)
+	output, err := json.Marshal(data)
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprint(w, string(output))
+}
+
+func getUpdatedCharacterIds(offset int) (ids []int) {
+	var _ []int
 	for {
 		ts := strconv.FormatInt(time.Now().Unix(), 10)
 		hash := getMd5(ts + conf.privateKey + conf.publicKey)
@@ -90,7 +123,7 @@ func getCharacters(w http.ResponseWriter, _ *http.Request) {
 		}
 
 		for _, result := range characterId.Data.Results {
-			data = append(data, result.Id)
+			ids = append(ids, result.Id)
 		}
 
 		if characterId.Data.Results == nil || len(characterId.Data.Results) < 100 {
@@ -100,21 +133,11 @@ func getCharacters(w http.ResponseWriter, _ *http.Request) {
 		offset += 100
 	}
 
-	file.CreateFile()
-	file.WriteFile(data)
-	output, err := json.Marshal(data)
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, string(output))
+	return ids
 }
 
 // Serve an endpoint /characters/{characterId} that returns only the id, name and description
 // of the character.
-// TODO: Handle invalid character id
 func getCharacter(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r) // Gets params
 
@@ -168,19 +191,12 @@ func handleRequests() {
 	log.Fatal(http.ListenAndServe(":8080", handler))
 }
 
-type config struct {
-	privateKey string
-	publicKey  string
-}
-
 func readConfig() *config {
 	return &config{
 		privateKey: os.Getenv("MARVEL_API_PRIVATE_KEY"),
 		publicKey:  os.Getenv("MARVEL_API_PUBLIC_KEY"),
 	}
 }
-
-var conf *config
 
 func getMd5(str string) string {
 	h := md5.New()
