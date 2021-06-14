@@ -12,7 +12,7 @@ A RESTful api that's based on [Marvel API](https://developer.marvel.com/) that r
 
 ## Quick Start
 
-### Install this Marvel api
+### Install this Marvel REST Api
 ``` bash
 go get -u github.com/albertleng/restapi
 ```
