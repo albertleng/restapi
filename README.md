@@ -12,17 +12,24 @@ A RESTful api that's based on [Marvel API](https://developer.marvel.com/) that r
 
 ## Quick Start
 
+### Install mux router
 ``` bash
-# Install mux router
 go get -u github.com/gorilla/mux
 ```
 
+### Environment Variables
+To run this project, you will need to add the following environment variables:
+
+`MARVEL_API_PRIVATE_KEY`
+
+`MARVEL_API_PUBLIC_KEY`
+
+### Build and run the rest api
 ``` bash
-# Build and run the rest api
 cd "$GOPATH"/src/github.com/albertleng/restapi || exit
 go build -o restapi
 echo "Go build done"
-./restapi
+./restapi 
 ```
 
 ## Endpoints

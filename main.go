@@ -166,6 +166,7 @@ func getMd5(str string) string {
 }
 
 func main() {
+	log.Println("Marvel REST Api starts...")
 	conf = readConfig()
 	handleRequests()
 }
