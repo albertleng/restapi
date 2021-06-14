@@ -32,7 +32,11 @@ type CharacterId struct {
 	} `json:"data"`
 }
 
+
+
 type Character struct {
+	Code int `json:"code"`
+	Status string `json:"status"`
 	Data struct {
 		Results []struct {
 			Id   int    `json:"id"`
@@ -40,6 +44,11 @@ type Character struct {
 			Desc string `json:"description"`
 		} `json:"results"`
 	} `json:"data"`
+}
+
+type CodeStatus struct {
+	Code int `json:"code"`
+	Status string `json:"status"`
 }
 
 // TODO: 1. Get ALL characters by multiple calls using different offsets
@@ -131,6 +140,15 @@ func getCharacter(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(responseBytes, &character)
 	if err != nil {
 		log.Fatal(err)
+		return
+	}
+
+	if character.Code != 200 {
+		codeStatus := CodeStatus{Status: character.Status, Code: character.Code}
+		data, _ := json.MarshalIndent(codeStatus, "", " ")
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(character.Code)
+		fmt.Fprint(w, string(data))
 		return
 	}
 

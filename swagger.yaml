@@ -31,6 +31,19 @@ definitions:
       id: 1009146
       name: "Abomination (Emil Blonsky)"
       description: "Formerly known as Emil Blonsky, a spy of Soviet Yugoslavian origin working for the KGB, the Abomination gained his powers after receiving a dose of gamma radiation similar to that which transformed Bruce Banner into the incredible Hulk."
+  404NotFound:
+    type: object
+    required:
+      - code
+      - status
+    properties:
+      code:
+        type: integer
+      status:
+        type: string
+    example:
+      code: 404
+      status: "We couldn't find that character"
 
 paths:
   /characters:
@@ -56,3 +69,7 @@ paths:
           description: Successfully returned the id, name and description of the character.
           schema:
             $ref: '#/definitions/Character'
+        404:
+          description: Invalid character id.
+          schema:
+            $ref: '#/definitions/404NotFound'
