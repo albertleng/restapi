@@ -25,6 +25,11 @@ To run this project, you will need to add the following environment variables:
 `MARVEL_API_PUBLIC_KEY`
 
 ### Build and run the rest api
+Run the `build.sh` to build and run the rest api
+``` bash
+./build.sh
+```
+or  
 ``` bash
 cd "$GOPATH"/src/github.com/albertleng/restapi || exit
 go build -o restapi
