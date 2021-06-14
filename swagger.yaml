@@ -9,6 +9,11 @@ schemes:
   - http
 
 definitions:
+  CharacterIds:
+    type: array
+    items:
+      type: integer
+    example: [1011334, 1017100, 1009144, 1010699]
   Character:
     type: object
     required:
@@ -35,9 +40,7 @@ paths:
         200:
           description: Successfully returned all Marvel character ids.
           schema:
-            type: array
-            items:
-              type: integer
+            $ref: '#/definitions/CharacterIds'
 
   /characters/{characterId}:
     get:
@@ -52,6 +55,4 @@ paths:
         200:
           description: Successfully returned the id, name and description of the character.
           schema:
-            type: object
-            items:
-              $ref: '#/definitions/Character'
+            $ref: '#/definitions/Character'
