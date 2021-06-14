@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"github.com/albertleng/restapi/file"
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -142,9 +143,14 @@ func getCharacter(w http.ResponseWriter, r *http.Request) {
 func handleRequests() {
 	router := mux.NewRouter().StrictSlash(true)
 
+	c := cors.New(cors.Options{
+		AllowedMethods: []string{"GET"},
+	})
 	router.HandleFunc("/characters", getCharacters).Methods("GET")
 	router.HandleFunc("/characters/{characterId}", getCharacter).Methods("GET")
-	log.Fatal(http.ListenAndServe(":8080", router))
+
+	handler := c.Handler(router)
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }
 
 type config struct {

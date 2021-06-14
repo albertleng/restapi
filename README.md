@@ -8,7 +8,8 @@ A RESTful api that's based on [Marvel API](https://developer.marvel.com/) that r
 ## Requirements
 - Sign up for a free **Marvel Developer API** at https://developer.marvel.com/.
 - [Go version 1.15](https://golang.org/dl/) or greater.
-- Install [mux router](https://github.com/gorilla/mux).
+- Install [mux router](https://github.com/gorilla/mux) to implement a request router and dispatcher for matching incoming requests to their respective handler.
+- Install [Go CORS handler](https://github.com/rs/cors) to handle cors requests.
 
 ## Quick Start
 
@@ -20,6 +21,11 @@ go get -u github.com/albertleng/restapi
 ### Install mux router
 ``` bash
 go get -u github.com/gorilla/mux
+```
+
+### Install CORS handler
+``` bash
+go get -u github.com/rs/cors
 ```
 
 ### Environment Variables
