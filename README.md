@@ -12,6 +12,11 @@ A RESTful api that's based on [Marvel API](https://developer.marvel.com/) that r
 
 ## Quick Start
 
+### Install this Marvel api
+``` bash
+go get -u github.com/albertleng/restapi
+```
+
 ### Install mux router
 ``` bash
 go get -u github.com/gorilla/mux
