@@ -1,7 +1,6 @@
 package main
 
 //TODO: Implement unit testing
-//TODO: Write a swagger.yaml
 
 import (
 	"crypto/md5"
@@ -51,8 +50,6 @@ type CodeStatus struct {
 	Status string `json:"status"`
 }
 
-// TODO: 1. Get ALL characters by multiple calls using different offsets
-// TODO: 2. Implement caching
 // Serve an endpoint /characters that returns all the Marvel character ids in a JSON array of
 // numbers.
 func getCharacters(w http.ResponseWriter, _ *http.Request) {
@@ -147,7 +144,7 @@ func getCharacter(w http.ResponseWriter, r *http.Request) {
 		codeStatus := CodeStatus{Status: character.Status, Code: character.Code}
 		data, _ := json.MarshalIndent(codeStatus, "", " ")
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(character.Code)
+		w.WriteHeader(http.StatusNotFound)
 		fmt.Fprint(w, string(data))
 		return
 	}
@@ -176,7 +173,6 @@ type config struct {
 	publicKey  string
 }
 
-// TODO: Change to read from config file
 func readConfig() *config {
 	return &config{
 		privateKey: os.Getenv("MARVEL_API_PRIVATE_KEY"),
