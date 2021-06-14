@@ -36,6 +36,8 @@ paths:
           description: Successfully returned all Marvel character ids.
           schema:
             type: array
+            items:
+              type: integer
 
   /characters/{characterId}:
     get:
@@ -50,6 +52,6 @@ paths:
         200:
           description: Successfully returned the id, name and description of the character.
           schema:
-            type: array
+            type: object
             items:
               $ref: '#/definitions/Character'
