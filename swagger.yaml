@@ -1,0 +1,55 @@
+swagger: '2.0'
+info:
+  version: 0.0.1
+  title: Marvel Characters REST Api
+  description: API which returns i) all the Marvel character ids and ii) the id, name and description of a character.
+host: localhost:8080
+basePath: /
+schemes:
+  - http
+
+definitions:
+  Character:
+    type: object
+    required:
+      - id
+      - name
+      - description
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      description:
+        type: string
+    example:
+      id: 1009146
+      name: "Abomination (Emil Blonsky)"
+      description: "Formerly known as Emil Blonsky, a spy of Soviet Yugoslavian origin working for the KGB, the Abomination gained his powers after receiving a dose of gamma radiation similar to that which transformed Bruce Banner into the incredible Hulk."
+
+paths:
+  /characters:
+    get:
+      description: Returns all Marvel character ids.
+      responses:
+        200:
+          description: Successfully returned all Marvel character ids.
+          schema:
+            type: array
+
+  /characters/{characterId}:
+    get:
+      description: Returns id, name and description of a character.
+      parameters:
+        - name: characterId
+          description: The character if of the character to get. If not specified, return all character ids.
+          in: path
+          type: integer
+          required: true
+      responses:
+        200:
+          description: Successfully returned the id, name and description of the character.
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Character'

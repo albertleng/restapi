@@ -1,10 +1,7 @@
 package main
 
-// Ref: https://github.com/loivis/marvel-comics-api-data-loader
-
 //TODO: Implement unit testing
 //TODO: Write a swagger.yaml
-//TODO: Add readme.md
 
 import (
 	"crypto/md5"
@@ -56,6 +53,8 @@ func getCharacters(w http.ResponseWriter, _ *http.Request) {
 			return
 		}
 
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
 		fmt.Fprint(w, string(output))
 		return
 	}
@@ -101,12 +100,14 @@ func getCharacters(w http.ResponseWriter, _ *http.Request) {
 		log.Fatal(err)
 		return
 	}
-
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, string(output))
 }
 
 // Serve an endpoint /characters/{characterId} that returns only the id, name and description
 // of the character.
+// TODO: Handle invalid character id
 func getCharacter(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r) // Gets params
 
@@ -133,6 +134,8 @@ func getCharacter(w http.ResponseWriter, r *http.Request) {
 	}
 
 	data, err := json.MarshalIndent(character.Data.Results[0], "", " ")
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	fmt.Fprint(w, string(data))
 }
 
