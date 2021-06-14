@@ -60,4 +60,15 @@ GET /characters
 GET /characters/{characterId}
 ```
 
+## Caching Strategy
+This api uses a simple text file `ids.txt` to store the `character ids`.  
+
+In response to a `/characters` call, there will be two scenarios:  
+### 1. `ids.txt` exists
+The api reads all the `character ids` from `ids.txt` into an integer array, `ids`. 
+- If it is the first call after the api starts, the api makes calls to `https://gateway.marvel.com/v1/public/characters` with `offset` starting with length of `ids` (and increment of 100 in subsequent calls) and `limit` of 100 until there is no character returned. These character ids are appended to both `ids.txt` and `ids`. The updated `ids` is returned as a response to the caller. (Notes: the calls to `https://gateway.marvel.com/v1/public/characters` are to account for the fact that there were new Marvel character(s) added where are not in `ids.txt`)
+- If it is not the first call after the api starts, the api returns `ids` as a response to the caller.
+### 2. `ids.txt` does not exist
+The api makes calls to `https://gateway.marvel.com/v1/public/characters` with `offset` starting with `0` (and increment of 100 in subsequent calls) and `limit` of 100 until there is no character returned. In each call, the character ids are appended to an integer array, `ids`. The file `ids.txt` is created, and `ids` is written to `ids.txt`. The `ids` is returned as a response to the caller. 
+
 
