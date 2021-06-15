@@ -71,4 +71,17 @@ The api reads all the `character ids` from `ids.txt` into an integer array, `ids
 ### 2. `ids.txt` does not exist
 The api makes calls to `https://gateway.marvel.com/v1/public/characters` with `offset` starting with `0` (and increment of 100 in subsequent calls) and `limit` of 100 until there is no character returned. In each call, the character ids are appended to an integer array, `ids`. The file `ids.txt` is created, and `ids` is written to `ids.txt`. The `ids` is returned as a response to the caller. 
 
+##### Sample content of `ids.txt`
+``` text
+1011334
+1017100
+1009144
+1010699
+1009146
+1016823
+1009148
+1009149
+1010903
+...
+```
 
