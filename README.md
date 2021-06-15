@@ -12,6 +12,7 @@ A RESTful api that's based on [Marvel API](https://developer.marvel.com/) that r
 - Install [mux router](https://github.com/gorilla/mux) to implement a request router and dispatcher for matching
   incoming requests to their respective handler.
 - Install [Go CORS handler](https://github.com/rs/cors) to handle cors requests.
+- This api is developed and verified in [Ubuntu 18.04.5 LTS](https://releases.ubuntu.com/18.04/)
 
 ## Quick Start
 
