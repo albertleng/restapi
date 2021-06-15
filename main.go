@@ -1,6 +1,5 @@
 package main
 
-//TODO: Implement unit testing
 import "log"
 
 func main() {
