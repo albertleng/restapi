@@ -2,8 +2,8 @@
 # Marvel Characters Golang REST Api
 
 A RESTful api that's based on [Marvel API](https://developer.marvel.com/) that returns:
-- all the Marvel characters ids in a JSON array of numbers.
-- the id, name and description of a character.
+- all the Marvel character `ids` in a JSON array of numbers.
+- the `id`, `name` and `description` of a character.
 
 ## Requirements
 - Sign up for a free **Marvel Developer API** at https://developer.marvel.com/.
@@ -60,6 +60,10 @@ GET /characters
 GET /characters/{characterId}
 ```
 
+## Tests
+
+### TODOs
+
 ## Caching Strategy
 This api uses a simple text file `ids.txt` to store the `character ids`.  
 
@@ -84,4 +88,10 @@ The api makes calls to `https://gateway.marvel.com/v1/public/characters` with `o
 1010903
 ...
 ```
+
+## Future Enhancements
+- Add caching of `id`, `name` and `description` and return it as response to calls to `/characters/{characterId}` to reduce latency.
+- Add `TLS/https` to encrypt requests and responses.
+- Refactor codes for better readability and maintainability.
+
 
