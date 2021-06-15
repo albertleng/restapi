@@ -75,7 +75,7 @@ GET /characters/{characterId}
 
 ## Tests
 
-`main_test.go` contains tests for `/characters` and `/characters/{characterId}'.
+`main_test.go` contains tests for `/characters` and `/characters/{characterId}`.
 
 ``` bash
 # run test
