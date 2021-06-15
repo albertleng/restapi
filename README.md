@@ -122,7 +122,7 @@ returned as a response to the caller.
 
 ## Future Enhancements
 
-- Add caching of `id`, `name` and `description` and return it as response to calls to `/characters/{characterId}` to
+- Add caching of `id`, `name` and `description`, read from cache and return it as response to calls to `/characters/{characterId}` to
   reduce latency.
 - Add `TLS/https` to encrypt requests and responses.
 - Refactor codes for better readability and maintainability.
