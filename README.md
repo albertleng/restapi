@@ -127,5 +127,17 @@ returned as a response to the caller.
   reduce latency.
 - Add `TLS/https` to encrypt requests and responses.
 - Refactor codes for better readability and maintainability.
+- Key Improvements:
+    - No project structure
+    - Caching strategy is not complete. No cache invalidation unless app is restarted.
+    - Does not pull data from marvel in parallel which means very slow API call.
+    - No error handling, app crashes when sending an invalid character id.
+    - Could have made it easier to run by using go mod.
+    - No unit testing for cache logic
+    - The code structure is not good. No separation of concern, not much abstraction to make it easier to maintain.
+    - Caching strategy is not accounting for updated characters.
+    - Cache refresh requires app restart.
+    - HTTP request is performed sequentially.
+  
 
 
